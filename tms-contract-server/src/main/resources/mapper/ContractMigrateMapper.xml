@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xtm.contract.mapper.ContractMigrateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.xtm.contract.model.domain.ContractMigrate">
+        <id column="id" property="id" />
+        <result column="contract_code" property="contractCode" />
+        <result column="document_id" property="documentId" />
+        <result column="table_suffix" property="tableSuffix" />
+    </resultMap>
+
+</mapper>

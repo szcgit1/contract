@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xtm.contract.mapper.ContractTemplateMapper">
+    <!-- 合同模板列表 -->
+    <select id = "getContractTemplateList" resultType="com.xtm.contract.model.vo.contractTemplate.ContractTemplateInfoQryVO" parameterType="com.xtm.contract.model.query.contractTemplate.ContractTemplateListQryReq">
+        SELECT
+        ct.id as id,
+        ct.business_type as businessType,
+        ct.template_name as templateName,
+        ct.title as title,
+        ct.is_default as isDefault,
+        ct.contract_type as contractType,
+        ct.contract_document_type as contractDocumentType,
+        ct.creater as creater,
+        ct.create_time as createTime,
+        ct.enabled_status as enabledStatus,
+        ct.applicable_object_type as applicableObjectType,
+        '适用默认的对象' AS applyCompanyName
+        FROM contract_template ct
+        <where>
+            IFNULL(ct.is_delete, 0) != 1
+            <if test="templateListQryParam.companyId != null and templateListQryParam.companyId != ''">
+                and (ct.company_id = #{templateListQryParam.companyId} or ct.company_id is null)
+            </if>
+            <if test="templateListQryParam.contractTemplateName != null and templateListQryParam.contractTemplateName != ''">
+                and instr(ct.template_name, #{templateListQryParam.contractTemplateName})
+            </if>
+            <if test="templateListQryParam.templateContractType != null">
+                and ct.contract_type = #{templateListQryParam.templateContractType}
+            </if>
+            <if test="templateListQryParam.templateDocumentType != null">
+                and ct.contract_document_type = #{templateListQryParam.templateDocumentType}
+            </if>
+            <if test="templateListQryParam.enabledStatus != null">
+                and ct.enabled_status = #{templateListQryParam.enabledStatus}
+            </if>
+            <if test="templateListQryParam.applicableObjectName != null and templateListQryParam.applicableObjectName != ''">
+                and ct.applicable_object_type = 1
+                and instr(ctc.company_name,#{templateListQryParam.applicableObjectName})
+            </if>
+            <if test="templateListQryParam.createStartTime != null and templateListQryParam.createStartTime != ''">
+                and ((date_format(ct.create_time,'%Y-%m-%d %H:%i:%S') <![CDATA[ >= ]]> date_format(#{templateListQryParam.createStartTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%S')))
+            </if>
+            <if test="templateListQryParam.createEndTime != null and templateListQryParam.createEndTime != ''">
+                and ((date_format(ct.create_time,'%Y-%m-%d %H:%i:%S') <![CDATA[ <= ]]> date_format(#{templateListQryParam.createEndTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%S')))
+            </if>
+            <if test="templateListQryParam.businessType != null">
+                and ct.business_type = #{templateListQryParam.businessType}
+            </if>
+        </where>
+        group by ct.id
+        order by ct.create_time desc
+    </select>
+
+    <select id="getLastestDirectTemplateByCompanyId" resultType="com.xtm.contract.model.domain.ContractTemplate" parameterType="map">
+        SELECT DISTINCT
+            ct.*
+            from contract_template ct
+            left join contract_template_company ctm
+            on ct.id = ctm.contract_template_id
+            <where>
+                    ifnull(ct.is_delete, 0) != 1
+                    and ct.applicable_object_type = 1
+                    and enabled_status = 1
+                <if test="documentType != null">
+                    and ct.contract_document_type = #{documentType}
+                </if>
+                <if test="contractBusinessType != null">
+                    and ct.business_type = #{contractBusinessType}
+                </if>
+                and ctm.company_id in
+                <foreach collection="companyIds" item="ids" open="(" separator="," close=")">
+                    #{ids}
+                </foreach>
+            </where>
+        ORDER BY ct.create_time desc
+    </select>
+</mapper>

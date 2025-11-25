@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xtm.contract.mapper.FrameAgreementMapper">
+    <!-- 框架合同协议列表 -->
+    <select id = "queryPageList" resultType="com.xtm.contract.model.vo.frameAgreement.FrameAgreementVo" parameterType="com.xtm.contract.model.param.frameAgreement.FrameAgreementParam">
+        SELECT
+        t.id as id,
+        t.code as code,
+        t.shipping as shipping,
+        t.shipping_uscc as shippingUscc,
+        t.shipping_main as shippingMain,
+        t.customer as customer,
+        t.customer_uscc as customerUscc,
+        t.sale_org as saleOrg,
+        t.sale_org_uscc as saleOrgUscc,
+        t.year as year,
+        t.total_volume as totalVolume,
+        t.product_line_id as productLineId,
+        t.product_line_code as productLineCode,
+        t.product_line_name as productLineName,
+        t.effective_date as effectiveDate,
+        t.expiry_date as expiryDate,
+        t.virtual_tag as virtualTag,
+        t.parent_id as parentId,
+        t.num as num,
+        t.remark as remark,
+        t.disabled as disabled,
+        t.busi_source as busiSource,
+        t.system_source as systemSource,
+        t.main_id as mainId,
+        t.create_id as createId,
+        t.create_time as createTime,
+        t.create_name as createName,
+        t.modify_id as modifyId,
+        t.modify_time as modifyTime,
+        t.modify_name as modifyName,
+        t.deleted as deleted
+        FROM frame_agreement t
+        <where>
+            t.deleted = 0
+            <if test="queryParam.code != null and queryParam.code != ''">
+                and t.code = #{queryParam.code}
+            </if>
+
+            <if test="queryParam.shippingUscc != null and queryParam.shippingUscc != ''">
+                and t.shipping_uscc = #{queryParam.shippingUscc}
+            </if>
+
+            <if test="queryParam.customerUscc != null and queryParam.customerUscc != ''">
+                and t.customer_uscc = #{queryParam.customerUscc}
+            </if>
+
+            <if test="queryParam.saleOrgUscc != null and queryParam.saleOrgUscc != ''">
+                and t.sale_org_uscc = #{queryParam.saleOrgUscc}
+            </if>
+
+            <if test="queryParam.productLineName != null and queryParam.productLineName != ''">
+                and t.product_line_name = #{queryParam.productLineName}
+            </if>
+
+            <if test="queryParam.disabled != null">
+                and t.disabled = #{queryParam.disabled}
+            </if>
+
+            <if test="queryParam.virtualTag != null">
+                and t.virtual_tag = #{queryParam.virtualTag}
+            </if>
+
+            <if test="queryParam.busiSource != null and queryParam.busiSource.size()!=0">
+                and t.busi_source in
+                <foreach collection="queryParam.busiSource" index="index" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+            <if test="queryParam.startTime != null">
+                and date_format(t.create_time,'%Y-%m-%d') <![CDATA[ >= ]]> date_format(#{queryParam.startTime},'%Y-%m-%d')
+            </if>
+
+            <if test="queryParam.endTime != null">
+                and date_format(t.create_time,'%Y-%m-%d') <![CDATA[ <= ]]> date_format(#{queryParam.endTime},'%Y-%m-%d')
+            </if>
+
+        </where>
+        order by t.disabled , t.create_time desc
+    </select>
+
+    <!--根据合同编号查询虚拟协议为否且已启用的物流合同协议-->
+    <select id = "queryVirtualEnableByCode" resultType="com.xtm.contract.model.vo.frameAgreement.FrameAgreementVo" parameterType="string">
+        SELECT
+        t.id as id,
+        t.code as code,
+        t.disabled as disabled
+        FROM frame_agreement t
+        where t.deleted = 0
+        and t.virtual_tag = 0
+        and t.disabled = 0
+        and t.code like CONCAT('%',#{contractCode},'%')
+    </select>
+
+</mapper>

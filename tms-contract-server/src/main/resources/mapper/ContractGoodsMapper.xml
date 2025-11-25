@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xtm.contract.mapper.ContractGoodsMapper">
+
+
+
+
+
+
+    <select id="getMigrateContractGoods" resultType="com.xtm.contract.model.domain.ContractGoods">
+        select
+            t.id,
+            t.contract_id contractId,
+            t.send_address sendAddress,
+            t.receive_address receiveAddress,
+            t.send_contact_name sendContactName,
+            t.receive_contact_name receiveContactName,
+            t.send_contact_mobile sendContactMobile,
+            t.receive_contact_mobile receiveContactMobile,
+            t.send_time sendTime,
+            t.receive_time receiveTime,
+            t.transport_type transportType,
+            t.vehicle_code vehicleCode,
+            t.contract_goods_json contractGoodsJson,
+            t.is_delete isDelete
+        FROM contract_goods_${suffix} t
+        WHERE t.contract_id = #{contractId}
+
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xtm.contract.mapper.SalesContractMapper">
+    <!-- 根据框架合同id查询协议合同的关联销售合同 -->
+    <select id = "queryByAgreementIds" resultType="com.xtm.contract.model.vo.SalesContractVo" parameterType="list">
+        SELECT
+        t.id as id,
+        t.frame_agreement_id as agreementId,
+        t.name as contractName,
+        t.code as contractCode
+        FROM sales_contract t
+        <where>
+            t.deleted = 0
+            AND t.frame_agreement_id in
+            <foreach collection="agreementIds" index="index" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+        order by t.create_time desc
+    </select>
+
+
+    <!--根据框架合同id，查询关联销售合同-->
+    <select id = "queryRelateContractByAgreementId" resultType="com.xtm.contract.model.vo.frameAgreement.FrameAgreementRelateSaleContractVo" parameterType="list">
+        SELECT
+        t.id as id,
+        t.code as contractCode,
+        t.frame_agreement_id as agreementId,
+        t.total_number as totalNumber,
+        t.re_month as reMonth,
+        t.total_number as totalNumber,
+        t.re_merge_state as reMergeState,
+        t.re_remark as reRemark
+        FROM sales_contract t
+        where t.deleted = 0
+        and t.frame_agreement_id in
+        <foreach collection="agreementIds" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        order by t.agreement_date
+    </select>
+
+    <!--根据销售合同查询启用且未绑定物流合同协议的销售合同接口-->
+    <select id="getEnableUnRelateContractByCode" resultType="com.xtm.contract.model.vo.SalesContractVo" parameterType="String">
+        SELECT id as id, code as contractCode, frame_agreement_id as agreementId, customer_name as customerName,
+            effective_time as effectiveTime, total_number as totalNumber
+        FROM
+            sales_contract
+        WHERE deleted = 0
+          AND frame_agreement_id is null
+          AND disabled = false
+          AND code = #{contractCode}
+    </select>
+    <select id="querySalesContractPageList" resultType="com.xtm.contract.model.vo.SalesContractListVO">
+        SELECT
+            id AS id,
+            disabled AS disabled,
+            name AS contractName,
+            code AS contractCode,
+            sales_org_id AS orgId,
+            sales_org_name AS orgName,
+            contract_type AS contractType,
+            customer_id AS customerId,
+            customer_name AS customerName,
+            tray_customer_id AS trayCustomerId,
+            tray_customer_name AS trayCustomerName,
+            signed_time AS signedTime,
+            effective_time AS effectiveTime,
+            end_time AS endTime,
+            department AS department,
+            salesman AS salesman,
+            price_type AS priceType,
+            frame_agreement_id AS agreementId,
+            case when frame_agreement_id is not null then frame_agreement_code else nc_agreement_code end AS agreementCode,
+            agreement_date AS agreementDate,
+            bear_cost_type AS bearCostType,
+            departure_place AS departurePlace,
+            whole_measurement AS wholeMeasurement,
+            ocean_customers AS oceanCustomers,
+            total_number AS totalNumber,
+            total_price_tax AS totalPriceTax,
+            pound_note AS poundNote,
+            remark AS remark,
+            contract_version AS contractVersion,
+            busi_source AS busiSource,
+            create_time AS createTime,
+            create_name AS createName,
+            system_source AS systemSource
+        FROM
+            sales_contract c
+        WHERE deleted = 0
+        <if test="param.contractNameCode != null and param.contractNameCode != ''">
+            AND (name = #{param.contractNameCode}
+            OR code = #{param.contractNameCode})
+        </if>
+        <if test="param.customerUscc != null and param.customerUscc != ''">
+            AND customer_uscc = #{param.customerUscc}
+        </if>
+        <if test="param.orgUscc != null and param.orgUscc != ''">
+            AND org_uscc = #{param.orgUscc}
+        </if>
+        <if test="param.disabled != null and param.disabled != ''">
+            AND disabled = #{param.disabled}
+        </if>
+        <if test="param.departurePlace != null and param.departurePlace != ''">
+            AND departure_place = #{param.departurePlace}
+        </if>
+        <if test="param.createTimeStart != null">
+            AND create_time >= #{param.createTimeStart}
+        </if>
+        <if test="param.createTimeEnd != null">
+            AND create_time <![CDATA[<=]]> #{param.createTimeEnd}
+        </if>
+        <if test="param.userName != null and param.userName != ''">
+            AND (salesman = #{param.userName}
+            OR create_name = #{param.userName})
+        </if>
+        <if test="param.bearCostType!=null and param.bearCostType.size()>0">
+            AND bear_cost_type IN
+            <foreach collection="param.bearCostType" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="param.wholeMeasurement != null and param.wholeMeasurement != ''">
+            AND whole_measurement = #{param.wholeMeasurement}
+        </if>
+        <if test="param.oceanCustomers != null and param.oceanCustomers != ''">
+            AND ocean_customers = #{param.oceanCustomers}
+        </if>
+        <if test="param.busiSource!=null and param.busiSource.size()>0">
+            AND busi_source IN
+            <foreach collection="param.busiSource" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        order by c.disabled,create_time desc
+    </select>
+    <select id="getSalesContractNoBusiSourceByShippingCompany"
+            resultType="com.xtm.contract.model.domain.SalesContract">
+        select DISTINCT con.id from sales_contract con
+                                        inner join sales_contract_goods goods on goods.sales_contract_id = con.id
+        where goods.nc_shipping_company_id = #{shippingCompanyId} and con.busi_source is null
+          and con.deleted = 0
+          and goods.deleted= 0
+    </select>
+</mapper>

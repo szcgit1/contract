@@ -1,0 +1,46 @@
+server:
+  port: 8905
+  servlet:
+    context-path: /apiPlat/tms-contract
+spring:
+  application:
+    name: tms-contract
+  cloud:
+    nacos:
+      config:
+        file-extension: yml
+        server-addr: 127.0.0.1:8848
+        namespace: sit3
+      discovery:
+        #Nacos的注册地址
+#        server-addr: 127.0.0.1:8848
+#        namespace: sit3
+        server-addr: nacosdev.tjzwzn.cn:80
+        namespace: sit3
+        enabled: true
+        register-enabled: false
+        username: nacos
+        password: xtm@#nacos
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+logging:
+  config: http://${spring.cloud.nacos.config.server-addr}/nacos/v1/cs/configs?tenant=${spring.cloud.nacos.config.namespace}&group=TMS_SERVICE_COMMON&dataId=tlog-logback-logstash&type=xml
+  level:
+    com:
+      xtm: debug
+    org:
+      apache:
+        rocketmq:
+          client:
+            consumer:
+              store: error
+            impl:
+              factory: error
+          remoting:
+            netty: error
+xtm.mybatis-plus.auto-fill.strategy: "transition"

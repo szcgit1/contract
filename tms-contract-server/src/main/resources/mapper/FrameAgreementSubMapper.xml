@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xtm.contract.mapper.FrameAgreementSubMapper">
+
+
+    <select id="getExistSub" resultType="com.xtm.contract.model.domain.FrameAgreementSub">
+        SELECT
+            sub.id id,
+            sub.agreement_id agreementId,
+            sub.sale_contract_id saleContractId,
+            sub.month month
+        FROM
+            frame_agreement_sub sub
+            LEFT JOIN sales_contract con ON con.id = sub.sale_contract_id
+        where con.sales_contract_id = #{ncSalesContractId}
+            and sub.relate=1
+            and sub.deleted=0
+            and con.deleted=0
+            limit 1
+    </select>
+</mapper>

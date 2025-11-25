@@ -1,0 +1,19 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.xtm</groupId>
+        <artifactId>tms-service</artifactId>
+        <version>20260204-SNAPSHOT</version>
+    </parent>
+
+    <!-- 202506141022 -->
+    <name>${project.artifactId}</name>
+    <groupId>com.xtm.contract</groupId>
+    <artifactId>tms-contract</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>tms-contract-api</module>
+        <module>tms-contract-server</module>
+    </modules>
+</project>

@@ -1,0 +1,16 @@
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*Mapper.xml,classpath*:mapper/tms/*Mapper.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+management:
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  health:
+    redis:
+      enabled: false

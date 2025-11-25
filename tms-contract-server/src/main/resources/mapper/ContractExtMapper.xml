@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xtm.contract.mapper.ContractExtMapper">
+
+
+
+    <select id="getMigrateContractExt" resultType="com.xtm.contract.model.domain.ContractExt">
+        select
+            t.id,
+            t.contract_id contractId,
+            t.create_time createTime,
+            t.modify_time modifyTime,
+            t.sign_type signType,
+            t.card_no cardNo
+        FROM contract_ext_${suffix} t
+        WHERE t.contract_id = #{contractId}
+
+    </select>
+
+
+</mapper>

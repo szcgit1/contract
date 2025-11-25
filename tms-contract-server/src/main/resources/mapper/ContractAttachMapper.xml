@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xtm.contract.mapper.ContractAttachMapper">
+    <!-- 合同附件状态修改 -->
+    <update id="updateContractAttachStatus" parameterType="java.lang.String" >
+        update contract_attach
+        set is_delete = 1, modify_time = now()
+        where contract_id = #{contractId,jdbcType=CHAR}
+    </update>
+
+    <select id="getMigrateContractAttach" resultType="com.xtm.contract.model.domain.ContractAttach">
+        select
+            t.id,
+            t.contract_id contractId,
+            t.file_id fileId,
+            t.is_delete isDelete,
+            t.create_time createTime,
+            t.creater ,
+            t.ver,
+            t.modifier,
+            t.modify_time modifyTime
+        FROM contract_attach_${suffix} t
+        WHERE t.contract_id = #{contractId}
+    </select>
+</mapper>
